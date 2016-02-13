@@ -6,6 +6,7 @@
   "repository": "https://github.com/dan-conachi/edc",
   "author": "GUX <xugnad@gmail.com>",
   "dependencies": {
+    "check-domain": "^1.0.7",
     "cheerio": "^0.19.0",
     "express": "~3.2.4",
     "mongoose": "^4.3.6",
