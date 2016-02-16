@@ -11,7 +11,7 @@ var dbInterface = require('./modules/CRUD');
 //uses MongoDB for storing internal and external URLs :) t.e can crawl huge websites with > 100K urls! 
 
 var options = {
-    url : 'http://www.thevillage.be',
+    url : 'http://www.dmoz.org',
     method : 'GET'
 };
 

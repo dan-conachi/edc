@@ -35,10 +35,13 @@ var isResourceFile = function(url) {
     } catch(e) {
         return false;
     }
-    
     var string = resource.href;
-    var match = string.match(/\.([a-z]{2,4})$/); //match files with extensions between 2 and 4 symbols
-    if(match) {
+    var matchWebFile = string.match(/.(html|htm|php|asp|aspx|jsp)/i);
+    if(matchWebFile) {
+        return false;
+    }
+    var matchSourceFile = string.match(/\.([A-Za-z]{2,4})$/i); //match files with extensions between 2 and 4 symbols
+    if(matchSourceFile) {
         return true; //is a resource file
     }
     return false;
@@ -80,6 +83,9 @@ var buildFullInternalUrl = function(checkedUrl, crawledUrl) {
     var fullUrl = stripHash(checkedUrl);
     //if relative path add host
     if(isRelativePath(checkedUrl)) {
+        console.log('checkedUrl :' + checkedUrl)
+        checkedUrl = checkedUrl[0] === '/' ? checkedUrl : '/' + checkedUrl;
+        console.log('full URL : ' + fullUrl);
         fullUrl = protocol + slashes + host + checkedUrl;
     }
     return fullUrl;
