@@ -1,7 +1,9 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var config == require('./config');
 
-mongoose.connect('mongodb://localhost/domains-crawler-xugnad');
+//mongoose.connect('mongodb://localhost/domains-crawler-xugnad');
+mongoose.connect(config.mongoConnect);
 var db = mongoose.connection;
 
 var init = function(options, callback) {
@@ -9,7 +11,7 @@ var init = function(options, callback) {
     db.once('open', function() {
         //insert the starting point for the crawl so we have a record in mongo
         insertInternalUrl(options.url, function() {
-           callback(options); 
+           callback(options);
         });
     });
 };
@@ -22,10 +24,10 @@ var insertExpired = function(domain) {
     var expired = new expiredModel({url : domain});
     expired.save(function(err, res) {
         if(err) {
-            console.log(err.message);   
+            console.log(err.message);
         }
         else {
-            console.log('external expired inserted!'); 
+            console.log('external expired inserted!');
         }
     });
 };
@@ -40,7 +42,7 @@ function insertInternalUrl(url, callback) {
         return;
     }
     internalUrl.save(function(err, res) {
-        if(err) console.log(err.message);   
+        if(err) console.log(err.message);
         if(callback) {
             callback();
         }
@@ -88,7 +90,7 @@ var getNextRecord = function(url, callback) {
     urlInDb.exec(function(err, res) {
         if(err) console.log(err.message);
         if(res) {
-            objectID = res._id; 
+            objectID = res._id;
         }
         if(!objectID) {
             //no ID found, search for the last crawled url
