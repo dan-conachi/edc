@@ -14,7 +14,6 @@ var urlType = function(checkedUrl, crawledUrl) {
     else { //internal url
         type = 'internal';
     }
-    
     return type;
 };
 
@@ -24,7 +23,6 @@ var getDomainName = function(url) {
     if(!parsedUrl.host) {
         return '';
     }
-    console.log('get Domain name vryshta ' + parsedUrl.host);
     return parsedUrl.host;
 };
 
@@ -55,11 +53,11 @@ var stripHash = function(url) {
     if(!url || url[0] === '#') {
         return '';
     }
-    //remove 
+    //remove
     if(url.indexOf('#') !== -1) {
         matchString = url.match(pattern);
         if(!matchString) return url;
-        cleanUrl = matchString[0]; //because match returns an array! 
+        cleanUrl = matchString[0]; //because match returns an array!
         return cleanUrl;
     }
     return url;
@@ -83,9 +81,7 @@ var buildFullInternalUrl = function(checkedUrl, crawledUrl) {
     var fullUrl = stripHash(checkedUrl);
     //if relative path add host
     if(isRelativePath(checkedUrl)) {
-        console.log('checkedUrl :' + checkedUrl)
         checkedUrl = checkedUrl[0] === '/' ? checkedUrl : '/' + checkedUrl;
-        console.log('full URL : ' + fullUrl);
         fullUrl = protocol + slashes + host + checkedUrl;
     }
     return fullUrl;
@@ -94,9 +90,9 @@ var buildFullInternalUrl = function(checkedUrl, crawledUrl) {
 var checkExpired = function(url, callback) {
     // majecticKey : "", don't have it yet
     //whois : {user : "", password : ""}, don't have it yet
-    
+
     //var domainString = getDomainName(url);
-    if(!url) { 
+    if(!url) {
         console.log('external url wrong' + url);
         return;
     }
@@ -104,21 +100,21 @@ var checkExpired = function(url, callback) {
         domain : url.toString(),
         majecticKey : "",
         whois : {user : "", password : ""},
-        noCheckIfDNSResolve : true, // if true, the availability & the complte whois data is not retrieved if there is a correct DNS resolve (default false) 
-        onlyAvailability :  true 
+        noCheckIfDNSResolve : true, // if true, the availability & the complte whois data is not retrieved if there is a correct DNS resolve (default false)
+        onlyAvailability :  true
     };
-    
+
     checkDomain(options, callback);
 };
 
 var manageUrl = function(checkedUrl, crawledUrl) {
     //add cases where url not valid to be added into the DB
-    
+
     //url points to a resource like jpg, pdf etc.
     if(isResourceFile(checkedUrl)) return;
     //if url is a hash
     if(!stripHash(checkedUrl)) return;
-    
+
     //check type of each anchor url from body
     var type = urlType(checkedUrl, crawledUrl);
     if(type === 'internal') {
@@ -127,12 +123,11 @@ var manageUrl = function(checkedUrl, crawledUrl) {
         dbInterface.insertInternalUrl(internalUrl);
     }
     else {
-        console.log('found an external link:' + checkedUrl);
         //get only the host name to work with
         var externalUrl = getDomainName(checkedUrl);
         checkExpired(externalUrl, function(err, res) {
             if(err) console.log(err.message);
-            console.log('res vryshta za DNS : ' + res.isDNSFound);
+            //do some check for the domain, not to insert invalid domains and subdomains
             if(!res.isDNSFound) {
                 dbInterface.insertExpired(externalUrl, function() {
                     //if all fine here do what?
