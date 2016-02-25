@@ -45,6 +45,18 @@ var isResourceFile = function(url) {
     return false;
 };
 
+function getSlug(url) {
+  var slug = '';
+  var urlObj = URL.parse(url);
+  if(urlObj.path) {
+    slug += urlObj.path;
+  }
+  if(urlObj.query) {
+    slug += urlObj.query;
+  }
+  return slug;
+}
+
 var stripHash = function(url) {
     var cleanUrl;
     var pattern = /.+?(?=#)/;
@@ -138,5 +150,7 @@ var manageUrl = function(checkedUrl, crawledUrl) {
 };
 
 module.exports = {
-     manageUrl : manageUrl
+     manageUrl : manageUrl,
+     getSlug : getSlug,
+     getDomainName : getDomainName
 };

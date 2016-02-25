@@ -11,8 +11,8 @@ var internalUrlSchema = new Schema({url : {type : String, index : true}, crawled
 var InternalUrlModel = mongoose.model('internal', internalUrlSchema);
 
 //schema for source domains
-var sourceSchema = new Schema({url : String}, {collection : 'sources'});
-var SourceModel = mongoose.model('source', expiredSchema);
+var sourceSchema = new Schema({url : {type : String, index : true}, crawled : {type : Boolean, default : false}}, {collection : 'sources'});
+var SourceModel = mongoose.model('source', sourceSchema);
 
 //mongoose.connect(config.mongoConnect);
 mongoose.connect(process.env.MONGOLAB_URI.toString());
@@ -62,7 +62,7 @@ function rebuildInternalCollection(callback) {
         'internals',
         {url : String, crawled : {type : Boolean, default : false}},
         function(err, res) {
-          conn.collections['internals'].createIndex({url : 1}, {unique : true}, function() {
+          conn.collections['internals'].createIndex({url : true}, {unique : true}, function() {
             callback();
           });
         }
@@ -71,70 +71,91 @@ function rebuildInternalCollection(callback) {
   });
 }
 
-var findLastCrawledUrl = function(callback) {
-    var recordId;
-    internalUrlModel
-        .find({'crawled' : true})
-        .sort({_id : -1})
-        .limit(1)
-        .exec(function(err, data) {
+var lastCrawledUrl = function(model, callback) {
+    model.find({'crawled' : true}).sort({_id : -1}).limit(1).exec(function(err, data) {
             if(err)  console.log(err.message);
-            if(Array.isArray(data)) {
-                recordId = data[0]._id;
-            }
-            else {
-                console.log('no ID found - tuk: data=' + data._id);
-                return;
-            }
+            callback(err, data);
         });
-    if(recordId) {
-        callback(recordId);
-    }
-    else {
-        callback(false);
-    }
 };
 
-var updateCrawledUrl = function(crawledUrl, callBack) {
+var updateInternalCrawledUrl = function(crawledUrl, callBack) {
     InternalUrlModel.update({url : crawledUrl}, {$set : {crawled : true}}, callBack);
 };
 
-// this returns a pointer - to be used with .exec(callback)
-var urlQuery = function(url) {
-    var urlRecord = InternalUrlModel.findOne({url : url});
-    return urlRecord;
+var updateSourceCrawledDomain = function(crawledUrl, callBack) {
+    //use regexp to search only the domain name
+    var domain = crawledUrl.substr(0, crawledUrl.indexOf('.'));
+    var domainMatch = new RegExp(domain, 'g');
+    SourceModel.update({url : domainMatch}, {$set : {crawled : true}}, callBack);
 };
 
-var getNextRecord = function(url, callback) {
-    var objectID;
-    var urlInDb = urlQuery(url);
-    //first find the record with the url
-    urlInDb.exec(function(err, res) {
-        if(err) console.log(err.message);
-        if(res) {
-            objectID = res._id;
-        }
-        if(!objectID) {
-            //no ID found, search for the last crawled url
-            findLastCrawledUrl(function(res) {
-                callback(res);
-            });
-            return;
-        }
-        //if not NULL it will return a record object containing all fields
-        InternalUrlModel.findOne({_id : {$gt : objectID}}, function(err, res) {
-            if(err) console.log(err.message);
-            //if no record is returned that could mean the end of the url crawl stack
-            callback(res);
-        });
+// this returns one document matching url
+var urlQuery = function(model, url, callback) {
+    model.findOne({url : url}, function(err, res) {
+      callback(err, res);
     });
 };
+
+function urlInternalQuery(url, callback) {
+  urlQuery(InternalUrlModel, url, function(err, res) {
+    callback(err, res);
+  });
+}
+
+function urlSourceQuery(url, callback) {
+  urlQuery(SourceModel, url, function(err, res) {
+    callback(err, res);
+  });
+}
+
+var getNextRecord = function(model, search, callback) {
+    var objectID;
+    var serachMatch = new RegExp(search, 'g');
+    urlQuery(model, serachMatch, function(err, res) {
+      //first find the record with the url
+      if(err) console.log(err.message);
+      if(res) {
+          objectID = res._id;
+      }
+      if(!objectID) {
+          //no ID found, search for the last crawled url
+          lastCrawledUrl(model, function(err, res) {
+              callback(err, res);
+          });
+      }
+      //if not NULL it will return a record object containing all fields
+      model.findOne({_id : {$gt : objectID}}, function(err, res) {
+          if(err) console.log(err.message);
+          //if no record is returned that could mean the end of the url crawl stack
+          callback(err, res);
+      });
+    });
+};
+
+//search internal urls by slug
+function getNextInternalRecord(slug, callback) {
+  getNextRecord(InternalUrlModel, slug, function(err, res) {
+    callback(err, res);
+  });
+}
+
+//get next domain to be crawled
+function getNextSourceDomain(domain, callback) {
+  //domain match should be a regexp not a string!
+  var domainName = domain.substr(0, domain.indexOf('.'));
+  var domainMatch = new RegExp(domainName, 'g');
+  getNextRecord(SourceModel, domainName, function(err, res) {
+    callback(err, res);
+  });
+}
 
 module.exports = {
     init: init,
     insertExpired : insertExpired,
     insertInternalUrl : insertInternalUrl,
-    getNextRecord : getNextRecord,
-    updateCrawledUrl : updateCrawledUrl,
-    rebuildInternalCollection : rebuildInternalCollection
+    getNextInternalRecord : getNextInternalRecord,
+    updateInternalCrawledUrl : updateInternalCrawledUrl,
+    updateSourceCrawledDomain : updateSourceCrawledDomain,
+    rebuildInternalCollection : rebuildInternalCollection,
+    getNextSourceDomain : getNextSourceDomain
 };
