@@ -20,6 +20,7 @@ var crawlerActive = true; //flag to manipulate crawler's state /started/ or /sto
 function crawl(options) {
     //crawlerActive is a flag to manage stop start crawler
     if(!crawlerActive) return;
+    console.log('crawl link now: ' + options.url);
     req(options, function(err, response, body) {
         if(err) console.log(err.message);
         var html  = $.load(body);
@@ -29,6 +30,7 @@ function crawl(options) {
         });
         dbInterface.updateInternalCrawledUrl(options.url, function() {
            //prepare the next url to be crawled
+           console.log('updateing url' + options.url);
            var slug = URL.getSlug(options.url);
            //check is we crawl the home page
            if(!slug || slug === '/') {
@@ -37,6 +39,8 @@ function crawl(options) {
            //internal url is retrived from the collection by the slug
             dbInterface.getNextInternalRecord(slug, function(err, record) {
                 if(!record) { //if result null then end crawl
+                    console.log('couldnt get next record for this slug ' + slug);
+                    return;
                     dbInterface.rebuildInternalCollection(function(err, res) {
                       //insert here the new domain to be crawled
                       var domain = URL.getDomainName(options.url);

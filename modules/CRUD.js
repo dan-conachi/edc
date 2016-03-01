@@ -89,6 +89,7 @@ function rebuildInternalCollection(callback) {
 
 var lastCrawledUrl = function(model, callback) {
     model.find({'crawled' : true}).sort({_id : -1}).limit(1).exec(function(err, data) {
+            console.log('last crawled returns data[0]: ' + data);
             if(err)  console.log(err.message);
             callback(err, data);
         });
@@ -110,7 +111,7 @@ var urlQuery = function(model, url, callback) {
     if(!(url instanceof RegExp)) {
       url = new RegExp(url, 'g');
     }
-    model.findOne({url : url}, function(err, res) {
+    model.findOne({'url' : url}, function(err, res) {
       callback(err, res);
     });
 };
