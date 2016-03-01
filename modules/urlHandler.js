@@ -3,10 +3,10 @@ var dbInterface = require('../modules/CRUD');
 var checkDomain = require("check-domain");
 
 //url type to be checked against the host domain that's beeing crawled / returns 'internal' or 'external'
-var urlType = function(checkedUrl, crawledUrl) {
+var urlType = function(checkedUrl, crawledDomain) {
     var type = '';
     var parsedUrl = URL.parse(checkedUrl); //parse the URL string into an object
-    var hostUrl = URL.parse(crawledUrl);
+    var hostUrl = URL.parse(crawledDomain);
     if(parsedUrl.host && (parsedUrl.host !== hostUrl.host)) {
         //different domain from the host that has to be saved into collection
         type = 'external';
@@ -48,13 +48,17 @@ var isResourceFile = function(url) {
 function getSlug(url) {
   var slug = '';
   var urlObj = URL.parse(url);
-  if(urlObj.path) {
+  if(urlObj.pathname) {
     slug += urlObj.path;
   }
-  if(urlObj.query) {
-    slug += urlObj.query;
-  }
   return slug;
+}
+
+function isJavaScript(url) {
+  if(url.indexOf('javascript:') !== -1) {
+    return true
+  }
+  return false;
 }
 
 var stripHash = function(url) {
@@ -120,30 +124,39 @@ var checkExpired = function(url, callback) {
 };
 
 var manageUrl = function(checkedUrl, crawledUrl) {
+    var externalDomain = '';
+    var internalUrl = '';
     //add cases where url not valid to be added into the DB
-
     //url points to a resource like jpg, pdf etc.
     if(isResourceFile(checkedUrl)) return;
     //if url is a hash
     if(!stripHash(checkedUrl)) return;
+    //if is javascriot void
+    if(isJavaScript(checkedUrl)) return;
 
     //check type of each anchor url from body
     var type = urlType(checkedUrl, crawledUrl);
     if(type === 'internal') {
-        var internalUrl = buildFullInternalUrl(checkedUrl, crawledUrl);
+        internalUrl = buildFullInternalUrl(checkedUrl, crawledUrl);
         //handle internal urls
         dbInterface.insertInternalUrl(internalUrl);
     }
     else {
         //get only the host name to work with
-        var externalUrl = getDomainName(checkedUrl);
-        checkExpired(externalUrl, function(err, res) {
+        externalDomain = getDomainName(checkedUrl);
+        if(!externalDomain) return;
+        checkExpired(externalDomain, function(err, res) {
             if(err) console.log(err.message);
             //do some check for the domain, not to insert invalid domains and subdomains
             if(!res.isDNSFound) {
-                dbInterface.insertExpired(externalUrl, function() {
+                console.log('insert expired ' + externalDomain);
+                dbInterface.insertExpired(externalDomain, function() {
                     //if all fine here do what?
                 });
+            }
+            //if not expired check number of indexed url and age for the domain
+            else {
+
             }
         });
     }

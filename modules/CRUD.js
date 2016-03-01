@@ -7,7 +7,7 @@ var expiredSchema = new Schema({url : String}, {collection : 'expireds'});
 var ExpiredModel = mongoose.model('expired', expiredSchema);
 
 //schema for expired domains
-var internalUrlSchema = new Schema({url : {type : String, index : true}, crawled : {type : Boolean, default : false}}, {collection : 'internals'});
+var internalUrlSchema = new Schema({url : {type : String, index : true, unique : true}, crawled : {type : Boolean, default : false}}, {collection : 'internals'});
 var InternalUrlModel = mongoose.model('internal', internalUrlSchema);
 
 //schema for source domains
@@ -44,6 +44,23 @@ function insertInternalUrl(url, callback) {
         callback();
         return;
     }
+    //build collection if not present
+    if(!conn.collections['internals']) {
+      conn.db.createCollection(
+        'internals',
+        {url : {type : String, index : true, unique : true}, crawled : {type : Boolean, default : false}},
+        function(err, res) {
+          conn.collections['internals'].createIndex({url : true}, {unique : true}, function(err, res) {
+            internalUrl.save(function(err, res) {
+                if(err) console.log(err.message);
+                if(callback) {
+                    callback();
+                }
+            });
+          });
+        }
+      );
+    }
     internalUrl.save(function(err, res) {
         if(err) console.log(err.message);
         if(callback) {
@@ -60,13 +77,12 @@ function rebuildInternalCollection(callback) {
     else {
       conn.db.createCollection(
         'internals',
-        {url : String, crawled : {type : Boolean, default : false}},
+        {url : {type : String, index : true, unique : true}, crawled : {type : Boolean, default : false}},
         function(err, res) {
-          conn.collections['internals'].createIndex({url : true}, {unique : true}, function() {
-            callback();
+          conn.collections['internals'].createIndex({url : 1}, {unique : true}, function(err, res) {
+            callback(err, res);
           });
-        }
-      );
+        });
     }
   });
 }
@@ -91,6 +107,9 @@ var updateSourceCrawledDomain = function(crawledUrl, callBack) {
 
 // this returns one document matching url
 var urlQuery = function(model, url, callback) {
+    if(!(url instanceof RegExp)) {
+      url = new RegExp(url, 'g');
+    }
     model.findOne({url : url}, function(err, res) {
       callback(err, res);
     });
@@ -110,8 +129,9 @@ function urlSourceQuery(url, callback) {
 
 var getNextRecord = function(model, search, callback) {
     var objectID;
-    var serachMatch = new RegExp(search, 'g');
-    urlQuery(model, serachMatch, function(err, res) {
+    search = search.replace(/([.*%+?^=!:;${}()|\[\]\/\\])/g, "\\$1");
+    var searchMatch = new RegExp(search, 'g');
+    urlQuery(model, searchMatch, function(err, res) {
       //first find the record with the url
       if(err) console.log(err.message);
       if(res) {
