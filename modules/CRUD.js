@@ -210,7 +210,7 @@ function init(callback) {
           //if internals collection is empty
           if(!data) {
             InternalUrlModel.findOne({}, function(err, data) {
-              if(Object.keys(data).length === 0) {
+              if(!data || Object.keys(data).length === 0) {
                 //this means no url in collection - insert domain start
                 insertInternalUrl(crawlObj.domainName, function(err, data) {
                   if(!data) {
