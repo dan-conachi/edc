@@ -195,6 +195,7 @@ function init(callback) {
     conn.once('open', function() {
       lastCrawledDomain(function(err, data) {
         if(err) throw new Error(err.message);
+        //no crawled domains in collection
         if(!data) {
           SourceModel.findOne({}, function(err, data) {
             crawlObj.domainName = data.url;
@@ -204,13 +205,18 @@ function init(callback) {
         else {
           crawlObj.domainName = data.url;
           crawlObj.currentDomainId = data._id;
+          getNextSourceDomain(crawlObj.currentDomainId, function(err, data) {
+            crawlObj.domainName = data.url;
+            crawlObj.currentDomainId = data._id;
+          });
         }
         lastCrawledInternalUrl(function(err, data) {
           if(err) throw new Error(err.message);
           //if internals collection is empty
           if(!data) {
             InternalUrlModel.findOne({}, function(err, data) {
-              if(!data || Object.keys(data).length === 0) {
+              //findone return an object or null!
+              if(!data) {
                 //this means no url in collection - insert domain start
                 insertInternalUrl(crawlObj.domainName, function(err, data) {
                   if(!data) {
@@ -233,8 +239,6 @@ function init(callback) {
             });
           }
           else {
-            console.log('trqbva da sme tuk!');
-            console.dir(data);
             crawlObj.internalUrlId = data._id; //data id from lastCrawledUrl!
             crawlObj.internalUrl = data.url;
             crawlObj.request.url = data.url;

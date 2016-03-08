@@ -47,6 +47,7 @@ function crawl(options) {
               if(err && err.message === 'quota exceeded') { //rebuild internals collection in case quote exceeded!
                 crawlerActive = false;
                 dbInterface.rebuildInternalCollection(rebuildInternalCollectionCb(err, data));
+                return;
               }
             });
         });
@@ -57,6 +58,7 @@ function crawl(options) {
                     console.log('couldnt get next record for this slug ' + slug);
                     crawlerActive = false;
                     dbInterface.rebuildInternalCollection(rebuildInternalCollectionCb(err, data));
+                    return;
                 }
                 else {
                   crawlObj.request.url = record.url;
