@@ -233,6 +233,8 @@ function init(callback) {
             });
           }
           else {
+            console.log('trqbva da sme tuk!');
+            console.dir(data);
             crawlObj.internalUrlId = data._id; //data id from lastCrawledUrl!
             crawlObj.internalUrl = data.url;
             crawlObj.request.url = data.url;

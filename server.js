@@ -20,36 +20,43 @@ function init() {
   });
 }
 
+function rebuildInternalCollectionCb(err, data) {
+  //insert here the new domain to be crawled
+  //var domain = URL.getDomainName(options.url);
+  dbInterface.updateSourceCrawledDomain(crawlObj.currentDomainId, function() {
+    dbInterface.getNextSourceDomain(crawlObj.currentDomainId, function(err, data) {
+      crawlObj.currentDomainId = data._id;
+      crawlObj.domainName = data.url;
+      dbInterface.insertInternalUrl(crawlObj.domainName, function(err, res) {
+        crawlerActive = true;
+        crawl(options);
+      });
+    });
+  });
+}
+
 function crawl(options) {
-    //crawlerActive is a flag to manage stop start crawler
+    //crawlerActive is a flag to manage stop/start crawler
     if(!crawlerActive) return;
     req(options, function(err, response, body) {
         if(err) console.log(err.message);
         var html  = $.load(body);
         //iterate on each anchor from body
         html('a').each(function() {
-            URL.manageUrl(this.attribs.href, crawlObj.domainName);
+            URL.manageUrl(this.attribs.href, crawlObj.domainName, function(err, data) {
+              if(err && err.message === 'quota exceeded') { //rebuild internals collection in case quote exceeded!
+                crawlerActive = false;
+                dbInterface.rebuildInternalCollection(rebuildInternalCollectionCb(err, data));
+              }
+            });
         });
         dbInterface.updateInternalCrawledUrl(crawlObj.internalUrlId, function() {
            //internal url is retrived from the collection by the slug
             dbInterface.getNextInternalRecord(crawlObj.internalUrlId, function(err, record) {
-                console.log('returned record here : ' + record);
                 if(!record) { //if result null then end crawl
                     console.log('couldnt get next record for this slug ' + slug);
-                    return;
-                    dbInterface.rebuildInternalCollection(function(err, res) {
-                      //insert here the new domain to be crawled
-                      var domain = URL.getDomainName(options.url);
-                      dbInterface.updateSourceCrawledDomain(crawlObj.currentDomainId, function() {
-                        dbInterface.getNextSourceDomain(crawlObj.currentDomainId, function(err, data) {
-                          crawlObj.currentDomainId = data._id;
-                          crawlObj.domainName = data.url;
-                          dbInterface.insertInternalUrl(crawlObj.domainName, function(err, res) {
-                              crawl(options);
-                          });
-                        });
-                      });
-                    });
+                    crawlerActive = false;
+                    dbInterface.rebuildInternalCollection(rebuildInternalCollectionCb(err, data));
                 }
                 else {
                   crawlObj.request.url = record.url;

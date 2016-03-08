@@ -123,7 +123,7 @@ var checkExpired = function(url, callback) {
     checkDomain(options, callback);
 };
 
-var manageUrl = function(checkedUrl, crawledUrl) {
+var manageUrl = function(checkedUrl, crawledUrl, callback) {
     var externalDomain = '';
     var internalUrl = '';
     //add cases where url not valid to be added into the DB
@@ -131,7 +131,7 @@ var manageUrl = function(checkedUrl, crawledUrl) {
     if(isResourceFile(checkedUrl)) return;
     //if url is a hash
     if(!stripHash(checkedUrl)) return;
-    //if is javascriot void
+    //if is javascript void
     if(isJavaScript(checkedUrl)) return;
 
     //check type of each anchor url from body
@@ -139,7 +139,9 @@ var manageUrl = function(checkedUrl, crawledUrl) {
     if(type === 'internal') {
         internalUrl = buildFullInternalUrl(checkedUrl, crawledUrl);
         //handle internal urls
-        dbInterface.insertInternalUrl(internalUrl);
+        dbInterface.insertInternalUrl(internalUrl, function(err, data) {
+            callback(err, data);
+        });
     }
     else {
         //get only the host name to work with
