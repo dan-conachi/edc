@@ -22,7 +22,6 @@ function init() {
 
 function rebuildInternalCollectionCb(err, data) {
   //insert here the new domain to be crawled
-  //var domain = URL.getDomainName(options.url);
   dbInterface.updateSourceCrawledDomain(crawlObj.currentDomainId, function() {
     dbInterface.getNextSourceDomain(crawlObj.currentDomainId, function(err, data) {
       crawlObj.currentDomainId = data._id;
@@ -35,10 +34,10 @@ function rebuildInternalCollectionCb(err, data) {
   });
 }
 
-function crawl(options) {
+function crawl(reqestObj) {
     //crawlerActive is a flag to manage stop/start crawler
     if(!crawlerActive) return;
-    req(options, function(err, response, body) {
+    req(reqestObj, function(err, response, body) {
         if(err) console.log(err.message);
         var html  = $.load(body);
         //iterate on each anchor from body
@@ -51,6 +50,7 @@ function crawl(options) {
               }
             });
         });
+        if(!crawlerActive) return;
         dbInterface.updateInternalCrawledUrl(crawlObj.internalUrlId, function() {
            //internal url is retrived from the collection by the slug
             dbInterface.getNextInternalRecord(crawlObj.internalUrlId, function(err, record) {
