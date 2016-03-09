@@ -1,6 +1,10 @@
 var URL = require('url');
 var dbInterface = require('../modules/CRUD');
 var checkDomain = require("check-domain");
+const dns = require('dns');
+
+//TODO//
+//curate function for cleaning url - like remove port from url
 
 //url type to be checked against the host domain that's beeing crawled / returns 'internal' or 'external'
 var urlType = function(checkedUrl, crawledDomain) {
@@ -25,6 +29,24 @@ var getDomainName = function(url) {
     }
     return parsedUrl.host;
 };
+
+function isValidDomain(domain) {
+  if(typeof domain !== 'string') return false;
+  //if subdomain then there will be more than 2 parts
+  var maxParts = 3;
+  var minParts = 2;
+  var parts = domain.split('.');
+  if(domain.indexOf('www.') !== -1) {
+    maxParts++;
+    minParts++;
+  }
+  if(parts.length < minParts || parts.length > maxParts) return false;
+  //reg exp to match valid domain name
+  var reg = /^(http(s)?:\/\/)?(www\.)?[a-zA-Z1-9\-]{3,}(\.[a-zA-Z]{2,10})?(\.[a-zA-Z]{2,3})?$/i;
+  var matchDomain = domain.match(reg);
+  if(!matchDomain) return false
+  return true;
+}
 
 var isResourceFile = function(url) {
     var resource;
@@ -147,6 +169,8 @@ var manageUrl = function(checkedUrl, crawledUrl, callback) {
         //get only the host name to work with
         externalDomain = getDomainName(checkedUrl);
         if(!externalDomain) return;
+        if(!(isValidDomain(externalDomain))) return;
+
         checkExpired(externalDomain, function(err, res) {
             if(err) console.log(err.message);
             //do some check for the domain, not to insert invalid domains and subdomains

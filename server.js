@@ -55,7 +55,7 @@ function crawl(options) {
            //internal url is retrived from the collection by the slug
             dbInterface.getNextInternalRecord(crawlObj.internalUrlId, function(err, record) {
                 if(!record) { //if result null then end crawl
-                    console.log('couldnt get next record for this slug ' + slug);
+                    console.log('couldnt get next record for this id ' + crawlObj.internalUrlId);
                     crawlerActive = false;
                     dbInterface.rebuildInternalCollection(rebuildInternalCollectionCb(err, data));
                     return;

@@ -147,6 +147,9 @@ var getNextRecord = function(model, id, callback) {
             if(num > 0) {
               //last
               console.log('not all crawled but ended!!!');
+              model.findOne({crawled:false}, function(err, data) {
+                callback(err, data);
+              });
               return;
             }
             else {
@@ -154,8 +157,10 @@ var getNextRecord = function(model, id, callback) {
             }
           });
         }
-        //if no record is returned that could mean the end of the url crawl stack
-        callback(err, res);
+        else {
+          //if no record is returned that could mean the end of the url crawl stack
+          callback(err, res);
+        }
     });
 };
 
