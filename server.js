@@ -29,7 +29,7 @@ function rebuildInternalCollectionCb() {
       crawlObj.domainName = data.url;
       dbInterface.insertInternalUrl(crawlObj.domainName, function(err, res) {
         crawlerActive = true;
-        crawl(options);
+        crawl(crawlObj.request);
       });
     });
   });
