@@ -63,7 +63,7 @@ function rebuildInternalCollection(callback) {
         {url : {type : String, index : true, unique : true}, crawled : {type : Boolean, default : false}},
         function(err, res) {
           conn.collections['internals'].createIndex({url : 1}, {unique : true}, function(err, res) {
-            callback(err, res);
+            callback();
           });
         });
     }
