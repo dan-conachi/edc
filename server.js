@@ -20,7 +20,7 @@ function init() {
   });
 }
 
-function rebuildInternalCollectionCb() {
+function rebuildInternalCollectionCb(err, data) {
   //insert here the new domain to be crawled
   //var domain = URL.getDomainName(options.url);
   dbInterface.updateSourceCrawledDomain(crawlObj.currentDomainId, function() {
@@ -46,7 +46,7 @@ function crawl(options) {
             URL.manageUrl(this.attribs.href, crawlObj.domainName, function(err, data) {
               if(err && err.message === 'quota exceeded') { //rebuild internals collection in case quote exceeded!
                 crawlerActive = false;
-                dbInterface.rebuildInternalCollection(rebuildInternalCollectionCb());
+                dbInterface.rebuildInternalCollection(rebuildInternalCollectionCb(err, data));
                 return;
               }
             });
@@ -57,7 +57,7 @@ function crawl(options) {
                 if(!record) { //if result null then end crawl
                     console.log('couldnt get next record for this id ' + crawlObj.internalUrlId);
                     crawlerActive = false;
-                    dbInterface.rebuildInternalCollection(rebuildInternalCollectionCb());
+                    dbInterface.rebuildInternalCollection(rebuildInternalCollectionCb(err, data));
                     return;
                 }
                 else {
