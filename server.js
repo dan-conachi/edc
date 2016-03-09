@@ -50,6 +50,7 @@ function crawl(reqestObj) {
               }
             });
         });
+        //because of crawlerActive = false; in previous block
         if(!crawlerActive) return;
         dbInterface.updateInternalCrawledUrl(crawlObj.internalUrlId, function() {
            //internal url is retrived from the collection by the slug
