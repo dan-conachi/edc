@@ -39,17 +39,20 @@ function crawl(reqestObj) {
     if(!crawlerActive) return;
     req(reqestObj, function(err, response, body) {
         if(err) console.log(err.message);
-        var html  = $.load(body);
-        //iterate on each anchor from body
-        html('a').each(function() {
-            URL.manageUrl(this.attribs.href, crawlObj.domainName, function(err, data) {
-              if(err && err.message === 'quota exceeded') { //rebuild internals collection in case quote exceeded!
-                crawlerActive = false;
-                dbInterface.rebuildInternalCollection(rebuildInternalCollectionCb());
-                return;
-              }
-            });
-        });
+        if(body) {
+          var html  = $.load(body);
+          //iterate on each anchor from body
+          html('a').each(function() {
+              URL.manageUrl(this.attribs.href, crawlObj.domainName, function(err, data) {
+                if(err && err.message === 'quota exceeded') { //rebuild internals collection in case quote exceeded!
+                  crawlerActive = false;
+                  dbInterface.rebuildInternalCollection(rebuildInternalCollectionCb());
+                  return;
+                }
+              });
+          });
+        }
+
         //because of crawlerActive = false; in previous block
         if(!crawlerActive) return;
         dbInterface.updateInternalCrawledUrl(crawlObj.internalUrlId, function() {
