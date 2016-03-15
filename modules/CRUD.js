@@ -54,8 +54,7 @@ function insertInternalUrl(url, callback) {
 function insertSource(domain, callback) {
   var source = new SourceModel({url : domain});
   source.save(function(err, res) {
-    //console.log('inserten new source : ' + domain);
-    callback(err, data);
+    callback(err, res);
   });
 }
 
@@ -171,16 +170,14 @@ var getNextRecord = function(model, id, callback) {
     });
 };
 
-//search internal urls by slug
-//use here objectId!
+//search internal urls by objectId
 function getNextInternalRecord(id, callback) {
   getNextRecord(InternalUrlModel, id, function(err, res) {
     callback(err, res);
   });
 }
 
-//get next domain to be crawled
-//use here objectId!
+//get next domain by objectId
 function getNextSourceDomain(id, callback) {
   //domain match should be a regexp not a string!
   //var domainName = domain.substr(0, domain.indexOf('.'));

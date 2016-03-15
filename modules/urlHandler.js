@@ -30,7 +30,7 @@ var getDomainName = function(url) {
     if(!parsedUrl.domain) {
         return null;
     }
-    return parsedUrl.domain + parsedUrl.tld;
+    return parsedUrl.domain + '.' + parsedUrl.tld;
 };
 
 function isValidDomain(domain) {
@@ -176,9 +176,7 @@ var manageUrl = function(checkedUrl, crawledUrl, callback) {
         checkExpired(externalDomain, function(err, res) {
             if(err) console.log(err.message);
             //do some check for the domain, not to insert invalid domains and subdomains
-            console.log('checking external ' + externalDomain);
             if(!res.isDNSFound) {
-                console.log('insert expired ' + externalDomain);
                 dbInterface.insertExpired(externalDomain, function() {
                     //if all fine here do what?
                 });
@@ -188,11 +186,11 @@ var manageUrl = function(checkedUrl, crawledUrl, callback) {
               seo.getDomainAge(externalDomain, function(err, registerDate) {
                 if(registerDate) {
                   var now = new Date().getFullYear();
-                  console.log('registerDate is : ' + registerDate);
-                  if((now - registerDate) >= 5) {
-                    dbInterface.insertSource(externalDomain, function(err, data) {
-                      console.log('inserted new source : ' + domain);
-                      console.log('inserted new source with age : ' + registerDate);
+                  if((now - registerDate) >= 1) {
+                    seo.getIndexedPagesInG(externalDomain, function(err, index) {
+                      if(index && index > 5000) {
+                        dbInterface.insertSource(externalDomain, function(err, data) { });
+                      }
                     });
                   }
                 }
