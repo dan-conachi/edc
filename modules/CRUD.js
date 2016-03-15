@@ -44,12 +44,19 @@ function insertInternalUrl(url, callback) {
     }
     else {
       internalUrl.save(function(err, res) {
-          if(err) console.log(err.message);
           if(callback) {
               callback(err, res);
           }
       });
     }
+}
+
+function insertSource(domain, callback) {
+  var source = new SourceModel({url : domain});
+  source.save(function(err, res) {
+    //console.log('inserten new source : ' + domain);
+    callback(err, data);
+  });
 }
 
 function rebuildInternalCollection(callback) {
@@ -258,6 +265,7 @@ module.exports = {
     init: init,
     crawlObj: crawlObj,
     insertExpired : insertExpired,
+    insertSource : insertSource,
     insertInternalUrl : insertInternalUrl,
     getNextInternalRecord : getNextInternalRecord,
     updateInternalCrawledUrl : updateInternalCrawledUrl,

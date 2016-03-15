@@ -1,7 +1,10 @@
-var URL = require('url');
-var dbInterface = require('../modules/CRUD');
-var checkDomain = require("check-domain");
+const URL = require('url');
+const parseDomain = require('parse-domain');
 const dns = require('dns');
+const dbInterface = require('../modules/CRUD');
+const checkDomain = require("check-domain");
+const seo = require('../modules/seoData');
+
 
 //TODO//
 //curate function for cleaning url - like remove port from url
@@ -9,9 +12,9 @@ const dns = require('dns');
 //url type to be checked against the host domain that's beeing crawled / returns 'internal' or 'external'
 var urlType = function(checkedUrl, crawledDomain) {
     var type = '';
-    var parsedUrl = URL.parse(checkedUrl); //parse the URL string into an object
-    var hostUrl = URL.parse(crawledDomain);
-    if(parsedUrl.host && (parsedUrl.host !== hostUrl.host)) {
+    var parseCheckedUrl = parseDomain(checkedUrl); //parse the URL string into an object
+    var parseCrawledDomain = parseDomain(crawledDomain);
+    if(parseCheckedUrl && (parseCheckedUrl.domain !== parseCrawledDomain.domain)) {
         //different domain from the host that has to be saved into collection
         type = 'external';
     }
@@ -22,12 +25,12 @@ var urlType = function(checkedUrl, crawledDomain) {
 };
 
 var getDomainName = function(url) {
-    var parsedUrl = URL.parse(url); //parse the URL string into an object
+    var parsedUrl = parseDomain(url); //parse the URL string into an object
     //if internal relative path
-    if(!parsedUrl.host) {
-        return '';
+    if(!parsedUrl.domain) {
+        return null;
     }
-    return parsedUrl.host;
+    return parsedUrl.domain + parsedUrl.tld;
 };
 
 function isValidDomain(domain) {
@@ -170,10 +173,10 @@ var manageUrl = function(checkedUrl, crawledUrl, callback) {
         externalDomain = getDomainName(checkedUrl);
         if(!externalDomain) return;
         if(!(isValidDomain(externalDomain))) return;
-
         checkExpired(externalDomain, function(err, res) {
             if(err) console.log(err.message);
             //do some check for the domain, not to insert invalid domains and subdomains
+            console.log('checking external ' + externalDomain);
             if(!res.isDNSFound) {
                 console.log('insert expired ' + externalDomain);
                 dbInterface.insertExpired(externalDomain, function() {
@@ -182,7 +185,18 @@ var manageUrl = function(checkedUrl, crawledUrl, callback) {
             }
             //if not expired check number of indexed url and age for the domain
             else {
-
+              seo.getDomainAge(externalDomain, function(err, registerDate) {
+                if(registerDate) {
+                  var now = new Date().getFullYear();
+                  console.log('registerDate is : ' + registerDate);
+                  if((now - registerDate) >= 5) {
+                    dbInterface.insertSource(externalDomain, function(err, data) {
+                      console.log('inserted new source : ' + domain);
+                      console.log('inserted new source with age : ' + registerDate);
+                    });
+                  }
+                }
+              });
             }
         });
     }

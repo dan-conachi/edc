@@ -37,6 +37,7 @@ function rebuildInternalCollectionCb() {
 function crawl(reqestObj) {
     //crawlerActive is a flag to manage stop/start crawler
     if(!crawlerActive) return;
+    console.log('crawling: ' + reqestObj.url);
     req(reqestObj, function(err, response, body) {
         if(err) console.log(err.message);
         if(body) {
