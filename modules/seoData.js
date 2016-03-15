@@ -48,8 +48,8 @@ function getIndexedPagesInG(domain, callback) {
     var text = html('#resultStats').text();
     var cleanText = text.replace(/[,\s\.]/g, '');
     var numbersArray = text.match(regexp);
-    var index = numbersArray.join('');
-    if(index) {
+    if(numbersArray) {
+      var index = numbersArray.join('');
       callback(err, parseInt(index, 10));
     }
     else {
