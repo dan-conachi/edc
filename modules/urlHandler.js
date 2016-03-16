@@ -149,6 +149,7 @@ var checkExpired = function(url, callback) {
 };
 
 var manageUrl = function(checkedUrl, crawledUrl, callback) {
+    if(!checkedUrl) return;
     var externalDomain = '';
     var internalUrl = '';
     //add cases where url not valid to be added into the DB
