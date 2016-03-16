@@ -12,6 +12,7 @@ const seo = require('../modules/seoData');
 //url type to be checked against the host domain that's beeing crawled / returns 'internal' or 'external'
 var urlType = function(checkedUrl, crawledDomain) {
     var type = '';
+    console.log('checkedUrl is' + checkedUrl);
     var parseCheckedUrl = parseDomain(checkedUrl); //parse the URL string into an object
     var parseCrawledDomain = parseDomain(crawledDomain);
     if(parseCheckedUrl && (parseCheckedUrl.domain !== parseCrawledDomain.domain)) {
