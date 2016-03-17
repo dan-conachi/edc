@@ -87,6 +87,13 @@ function isJavaScript(url) {
   return false;
 }
 
+function isEmal(url) {
+  if(url.indexOf('mailto:') !== -1) {
+    return true
+  }
+  return false;
+}
+
 var stripHash = function(url) {
     var cleanUrl;
     var pattern = /.+?(?=#)/;
@@ -160,6 +167,8 @@ var manageUrl = function(checkedUrl, crawledUrl, callback) {
     if(!stripHash(checkedUrl)) return;
     //if is javascript void
     if(isJavaScript(checkedUrl)) return;
+    //if href is mailto:
+    if(isEmal(checkedUrl)) return; 
 
     //check type of each anchor url from body
     var type = urlType(checkedUrl, crawledUrl);
