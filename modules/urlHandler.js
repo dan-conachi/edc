@@ -136,25 +136,32 @@ var buildFullInternalUrl = function(checkedUrl, crawledUrl) {
     return fullUrl;
 };
 
-var checkExpired = function(url, callback) {
-    // majecticKey : "", don't have it yet
-    //whois : {user : "", password : ""}, don't have it yet
+// var checkExpired = function(url, callback) {
+//     // majecticKey : "", don't have it yet
+//     //whois : {user : "", password : ""}, don't have it yet
+//
+//     //var domainString = getDomainName(url);
+//     if(!url) {
+//         console.log('external url wrong' + url);
+//         return;
+//     }
+//     var options = {
+//         domain : url.toString(),
+//         majecticKey : "",
+//         whois : {user : "", password : ""},
+//         noCheckIfDNSResolve : true, // if true, the availability & the complte whois data is not retrieved if there is a correct DNS resolve (default false)
+//         onlyAvailability :  true
+//     };
+//
+//     checkDomain(options, callback);
+// };
 
-    //var domainString = getDomainName(url);
-    if(!url) {
-        console.log('external url wrong' + url);
-        return;
-    }
-    var options = {
-        domain : url.toString(),
-        majecticKey : "",
-        whois : {user : "", password : ""},
-        noCheckIfDNSResolve : true, // if true, the availability & the complte whois data is not retrieved if there is a correct DNS resolve (default false)
-        onlyAvailability :  true
-    };
-
-    checkDomain(options, callback);
-};
+function checkExpired(url, callback) {
+  var domainString = getDomainName(url);
+  dns.resolve(domainString, function(err, data){
+    callback(err, data);
+  });
+}
 
 var manageUrl = function(checkedUrl, crawledUrl, callback) {
     if(!checkedUrl) return;
@@ -168,7 +175,7 @@ var manageUrl = function(checkedUrl, crawledUrl, callback) {
     //if is javascript void
     if(isJavaScript(checkedUrl)) return;
     //if href is mailto:
-    if(isEmail(checkedUrl)) return; 
+    if(isEmail(checkedUrl)) return;
 
     //check type of each anchor url from body
     var type = urlType(checkedUrl, crawledUrl);
@@ -187,7 +194,11 @@ var manageUrl = function(checkedUrl, crawledUrl, callback) {
         checkExpired(externalDomain, function(err, res) {
             if(err) console.log(err.message);
             //do some check for the domain, not to insert invalid domains and subdomains
-            if(!res.isDNSFound) {
+            console.log('checking dns for ' + externalDomain);
+            if(err) {
+              console.log('err.code ' + err.code);
+            }
+            if(err && err.code === 'ENOTFOUND') {
                 dbInterface.insertExpired(externalDomain, function() {
                     //if all fine here do what?
                 });
