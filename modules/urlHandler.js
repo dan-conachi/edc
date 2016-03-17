@@ -87,7 +87,7 @@ function isJavaScript(url) {
   return false;
 }
 
-function isEmal(url) {
+function isEmail(url) {
   if(url.indexOf('mailto:') !== -1) {
     return true
   }
@@ -168,7 +168,7 @@ var manageUrl = function(checkedUrl, crawledUrl, callback) {
     //if is javascript void
     if(isJavaScript(checkedUrl)) return;
     //if href is mailto:
-    if(isEmal(checkedUrl)) return; 
+    if(isEmail(checkedUrl)) return; 
 
     //check type of each anchor url from body
     var type = urlType(checkedUrl, crawledUrl);
