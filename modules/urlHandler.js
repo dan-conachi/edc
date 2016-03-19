@@ -112,14 +112,14 @@ var stripHash = function(url) {
     return url;
 };
 
-var isRelativePath = function(checkedUrl) {
+function isRelativePath(checkedUrl) {
     var urlObject = URL.parse(checkedUrl);
     //if value is falsey
     if(!urlObject.host) {
         return true;
     }
     return false;
-};
+}
 
 //make sure here that we end up with a full url!
 var buildFullInternalUrl = function(checkedUrl, crawledUrl) {
@@ -165,6 +165,8 @@ function checkExpired(url, callback) {
 
 var manageUrl = function(checkedUrl, crawledUrl, callback) {
     if(!checkedUrl) return;
+    //remove new lines or 
+    checkedUrl = checkedUrl.replace(/(\r\n\s|\n|\r|\s)/gm,'');
     var externalDomain = '';
     var internalUrl = '';
     //add cases where url not valid to be added into the DB
