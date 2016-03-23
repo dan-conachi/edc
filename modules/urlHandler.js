@@ -2,7 +2,11 @@ const URL = require('url');
 const parseDomain = require('parse-domain');
 const dns = require('dns');
 const dbInterface = require('../modules/CRUD');
-const checkDomain = require("check-domain");
+dnscache = require('dnscache')({
+        "enable" : true,
+        "ttl" : 300,
+        "cachesize" : 100000
+    });
 const seo = require('../modules/seoData');
 
 
@@ -158,14 +162,14 @@ var buildFullInternalUrl = function(checkedUrl, crawledUrl) {
 
 function checkExpired(url, callback) {
   var domainString = getDomainName(url);
-  dns.resolve(domainString, function(err, data){
+  dnscache.resolve(domainString, function(err, data){
     callback(err, data);
   });
 }
 
 var manageUrl = function(checkedUrl, crawledUrl, callback) {
+    //remove new lines or spaces in href
     if(!checkedUrl) return;
-    //remove new lines or 
     checkedUrl = checkedUrl.replace(/(\r\n\s|\n|\r|\s)/gm,'');
     var externalDomain = '';
     var internalUrl = '';
@@ -197,12 +201,12 @@ var manageUrl = function(checkedUrl, crawledUrl, callback) {
             if(err) console.log(err.message);
             //do some check for the domain, not to insert invalid domains and subdomains
             console.log('checking dns for ' + externalDomain);
-            if(err) {
-              console.log('err.code ' + err.code);
-            }
             if(err && err.code === 'ENOTFOUND') {
-                dbInterface.insertExpired(externalDomain, function() {
+                dbInterface.insertExpired(externalDomain, function(err, data) {
                     //if all fine here do what?
+                    /*seo.getSemrushBacklinks(externalDomain, function() {
+
+                    });*/
                 });
             }
             //if not expired check number of indexed url and age for the domain
