@@ -2,7 +2,7 @@ const URL = require('url');
 const parseDomain = require('parse-domain');
 const dns = require('dns');
 const dbInterface = require('../modules/CRUD');
-dnscache = require('dnscache')({
+const dnscache = require('dnscache')({
         "enable" : true,
         "ttl" : 300,
         "cachesize" : 100000
@@ -202,12 +202,15 @@ var manageUrl = function(checkedUrl, crawledUrl, callback) {
             //do some check for the domain, not to insert invalid domains and subdomains
             console.log('checking dns for ' + externalDomain);
             if(err && err.code === 'ENOTFOUND') {
-                dbInterface.insertExpired(externalDomain, function(err, data) {
-                    //if all fine here do what?
-                    /*seo.getSemrushBacklinks(externalDomain, function() {
-
-                    });*/
+              //create object to stor in expireds
+              var record = {};
+              record.url = externalDomain;
+              seo.getSemrushBacklinks(externalDomain, function(err, links) {
+                record.backlinks = links;
+                dbInterface.insertExpired(record, function(err, data) {
+                    
                 });
+              });
             }
             //if not expired check number of indexed url and age for the domain
             else {

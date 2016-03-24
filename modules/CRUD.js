@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 var config = require('../config');
 
 //schema for internal urls
-var expiredSchema = new Schema({url : String}, {collection : 'expireds'});
+var expiredSchema = new Schema({url : String, backlinks : Number}, {collection : 'expireds'});
 var ExpiredModel = mongoose.model('expired', expiredSchema);
 
 //schema for expired domains
@@ -19,12 +19,14 @@ mongoose.connect(process.env.MONGOLAB_URI.toString());
 var conn = mongoose.connection;
 
 //insert expired domain record to the expireds collection
-var insertExpired = function(domain) {
-    var expired = new ExpiredModel({url : domain});
+var insertExpired = function(record, callback) {
+  //record must be an object with expired schema properties
+    var expired = new ExpiredModel(record);
     expired.save(function(err, res) {
         if(err) {
             console.log(err.message);
         }
+        callback(err, res);
     });
 };
 

@@ -58,7 +58,29 @@ function getIndexedPagesInG(domain, callback) {
   });
 }
 
+function getSemrushBacklinks(domain, callback) {
+  var semrushLinks = 'http://publicapi.bl.semrush.com/?url=' + domain;
+  var requestObj = {
+    url : semrushLinks,
+    method : 'GET'
+  }
+
+  req(requestObj, function(err, response, body) {
+    if(!body) return;
+    var html = $.load(body);
+    var links = html('links_domain').text();
+    console.log(domain + ' has links' + links);
+    if(links) {
+      callback(null, links);
+    }
+    else {
+      callback(null, 0);
+    }
+  });
+}
+
 module.exports = {
   getDomainAge : getDomainAge,
-  getIndexedPagesInG : getIndexedPagesInG
+  getIndexedPagesInG : getIndexedPagesInG,
+  getSemrushBacklinks : getSemrushBacklinks
 };

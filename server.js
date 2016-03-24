@@ -80,4 +80,4 @@ function crawl(reqestObj) {
 }
 
 //all starts here
-init()
+init();
