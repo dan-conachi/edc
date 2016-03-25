@@ -1,13 +1,16 @@
-const URL = require('url');
-const parseDomain = require('parse-domain');
-const dns = require('dns');
-const dbInterface = require('../modules/CRUD');
-const dnscache = require('dnscache')({
+'use strict'
+
+var URL = require('url');
+var parseDomain = require('parse-domain');
+var dns = require('dns');
+var dbInterface = require('../modules/CRUD');
+var dnscache = require('dnscache')({
         "enable" : true,
         "ttl" : 300,
         "cachesize" : 100000
     });
-const seo = require('../modules/seoData');
+var seo = require('../modules/seoData');
+var config = require('../config.js');
 
 
 //TODO//
@@ -16,7 +19,6 @@ const seo = require('../modules/seoData');
 //url type to be checked against the host domain that's beeing crawled / returns 'internal' or 'external'
 var urlType = function(checkedUrl, crawledDomain) {
     var type = '';
-    console.log('checkedUrl is' + checkedUrl);
     var parseCheckedUrl = parseDomain(checkedUrl); //parse the URL string into an object
     var parseCrawledDomain = parseDomain(crawledDomain);
     if(parseCheckedUrl && (parseCheckedUrl.domain !== parseCrawledDomain.domain)) {
@@ -140,26 +142,6 @@ var buildFullInternalUrl = function(checkedUrl, crawledUrl) {
     return fullUrl;
 };
 
-// var checkExpired = function(url, callback) {
-//     // majecticKey : "", don't have it yet
-//     //whois : {user : "", password : ""}, don't have it yet
-//
-//     //var domainString = getDomainName(url);
-//     if(!url) {
-//         console.log('external url wrong' + url);
-//         return;
-//     }
-//     var options = {
-//         domain : url.toString(),
-//         majecticKey : "",
-//         whois : {user : "", password : ""},
-//         noCheckIfDNSResolve : true, // if true, the availability & the complte whois data is not retrieved if there is a correct DNS resolve (default false)
-//         onlyAvailability :  true
-//     };
-//
-//     checkDomain(options, callback);
-// };
-
 function checkExpired(url, callback) {
   var domainString = getDomainName(url);
   dnscache.resolve(domainString, function(err, data){
@@ -167,7 +149,7 @@ function checkExpired(url, callback) {
   });
 }
 
-var manageUrl = function(checkedUrl, crawledUrl, callback) {
+var manageUrl = function(checkedUrl, crawledUrl) {
     //remove new lines or spaces in href
     if(!checkedUrl) return;
     checkedUrl = checkedUrl.replace(/(\r\n\s|\n|\r|\s)/gm,'');
@@ -188,8 +170,12 @@ var manageUrl = function(checkedUrl, crawledUrl, callback) {
     if(type === 'internal') {
         internalUrl = buildFullInternalUrl(checkedUrl, crawledUrl);
         //handle internal urls
+        //if quota exceeded then don't insert record
+        if(config.insertCollectionQExceeded) return;
         dbInterface.insertInternalUrl(internalUrl, function(err, data) {
-            callback(err, data);
+          if(err && err.message === 'quota exceeded') {
+            config.insertCollectionQExceeded = true;
+          }
         });
     }
     else {
@@ -198,9 +184,11 @@ var manageUrl = function(checkedUrl, crawledUrl, callback) {
         if(!externalDomain) return;
         if(!(isValidDomain(externalDomain))) return;
         checkExpired(externalDomain, function(err, res) {
-            if(err) console.log(err.message);
+            if(err) {
+              console.log('checked domain ' + externalDomain);
+              console.log(err.message);
+            }
             //do some check for the domain, not to insert invalid domains and subdomains
-            console.log('checking dns for ' + externalDomain);
             if(err && err.code === 'ENOTFOUND') {
               //create object to stor in expireds
               var record = {};
@@ -208,7 +196,7 @@ var manageUrl = function(checkedUrl, crawledUrl, callback) {
               seo.getSemrushBacklinks(externalDomain, function(err, links) {
                 record.backlinks = links;
                 dbInterface.insertExpired(record, function(err, data) {
-                    
+
                 });
               });
             }

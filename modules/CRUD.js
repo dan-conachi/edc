@@ -1,6 +1,8 @@
+'use strict'
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var config = require('../config');
+var config = require('../config.js');
 
 //schema for internal urls
 var expiredSchema = new Schema({url : String, backlinks : Number}, {collection : 'expireds'});

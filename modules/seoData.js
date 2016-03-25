@@ -69,7 +69,6 @@ function getSemrushBacklinks(domain, callback) {
     if(!body) return;
     var html = $.load(body);
     var links = html('links_domain').text();
-    console.log(domain + ' has links' + links);
     if(links) {
       callback(null, links);
     }

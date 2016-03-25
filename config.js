@@ -1,7 +1,9 @@
+'use strict'
+
 /*Config data*/
 
-config = {
-  mongoConnect : 'mongodb://localhost/domains-crawler-xugnad'
+module.exports = {
+  mongoConnect : 'mongodb://localhost/domains-crawler-xugnad',
+  crawlerActive : true,
+  insertCollectionQExceeded : false
 };
-
-module.exports = config;
