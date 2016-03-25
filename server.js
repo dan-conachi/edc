@@ -61,7 +61,7 @@ function crawl(reqestObj) {
                 }
                 else {
                   crawlObj.request.url = record.url;
-                  crawlObj.internalUrl.url = record.url;
+                  crawlObj.internalUrl = record.url;
                   crawlObj.internalUrlId = record._id;
 
                   //manage crawlerActive flag before the recursion is called
