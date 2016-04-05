@@ -40,6 +40,7 @@ function crawl(reqestObj) {
     console.log('crawling: ' + reqestObj.url);
     req(reqestObj, function(err, response, body) {
         if(err) console.log(err.message);
+        console.log('body : ' + body);
         if(body) {
           var html  = $.load(body);
           //iterate on each anchor from body
