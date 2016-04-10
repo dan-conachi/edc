@@ -60,7 +60,7 @@ function crawl(reqestObj) {
                     return;
                 }
                 else {
-                  crawlObj.request.url = record.url;
+                  crawlObj.request.url = encodeURI(decodeURI(record.url));
                   crawlObj.internalUrl = record.url;
                   crawlObj.internalUrlId = record._id;
 
