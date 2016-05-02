@@ -5,9 +5,9 @@ var parseDomain = require('parse-domain');
 var dns = require('dns');
 var dbInterface = require('../modules/CRUD');
 var dnscache = require('dnscache')({
-        "enable" : true,
-        "ttl" : 300,
-        "cachesize" : 100000
+        "enable" : true
+        //"ttl" : 300,
+        //"cachesize" : 100000
     });
 var seo = require('../modules/seoData');
 var config = require('../config.js');
