@@ -194,9 +194,11 @@ var manageUrl = function(checkedUrl, crawledUrl) {
               var record = {};
               record.url = externalDomain;
               seo.getSemrushBacklinks(externalDomain, function(err, links) {
+                if(links < 3) {
+                  return;
+                }
                 record.backlinks = links;
                 dbInterface.insertExpired(record, function(err, data) {
-
                 });
               });
             }

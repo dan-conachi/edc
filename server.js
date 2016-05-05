@@ -60,7 +60,6 @@ function crawl(reqestObj) {
                     return;
                 }
                 else {
-                  console.log(record.url);
                   try {
                     crawlObj.request.url = encodeURI(decodeURI(record.url));
                   }
