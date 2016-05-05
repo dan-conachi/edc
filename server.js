@@ -51,7 +51,7 @@ function crawl(reqestObj) {
         //because of crawlerActive = false; in previous block
         if(!config.crawlerActive) return;
         dbInterface.updateInternalCrawledUrl(crawlObj.internalUrlId, function() {
-           //internal url is retrived from the collection by the slug
+           //internal url is retrived from the collection by id
             dbInterface.getNextInternalRecord(crawlObj.internalUrlId, function(err, record) {
                 if(!record) { //if result null then end crawl
                     console.log('couldnt get next record for this id ' + crawlObj.internalUrlId);
@@ -60,6 +60,7 @@ function crawl(reqestObj) {
                     return;
                 }
                 else {
+                  console.log(record.url);
                   crawlObj.request.url = encodeURI(decodeURI(record.url));
                   crawlObj.internalUrl = record.url;
                   crawlObj.internalUrlId = record._id;
