@@ -110,8 +110,8 @@ function lastCrawledInternalUrl(callback) {
 }
 
 //use here objectId!
-function updateInternalCrawledUrl(id, callBack) {
-    InternalUrlModel.update({_id : id}, {$set : {crawled : true}}, callBack);
+function updateInternalCrawledUrl(id, callback) {
+    InternalUrlModel.update({_id : id}, {$set : {crawled : true}}, callback);
 }
 
 //use here objectId!
@@ -262,6 +262,14 @@ function init(callback) {
     });
 };
 
+function getDomainsData(query, callback) {
+  var q = query || {};
+  //var expired = new ExpiredModel();
+  ExpiredModel.find(q).exec(function(err, data) {
+    callback(err, data);
+  });
+}
+
 module.exports = {
     init: init,
     crawlObj: crawlObj,
@@ -274,5 +282,6 @@ module.exports = {
     rebuildInternalCollection : rebuildInternalCollection,
     getNextSourceDomain : getNextSourceDomain,
     lastCrawledDomain : lastCrawledDomain,
-    lastCrawledInternalUrl : lastCrawledInternalUrl
+    lastCrawledInternalUrl : lastCrawledInternalUrl,
+    getDomainsData : getDomainsData
 };

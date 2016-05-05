@@ -61,7 +61,19 @@ function crawl(reqestObj) {
                 }
                 else {
                   console.log(record.url);
-                  crawlObj.request.url = encodeURI(decodeURI(record.url));
+                  try {
+                    crawlObj.request.url = encodeURI(decodeURI(record.url));
+                  }
+                  catch(e) {
+                    try {
+                      crawlObj.request.url = encodeURIComponent(decodeURIComponent(record.url));
+                    }
+                    catch(e) {
+                      dbInterface.updateInternalCrawledUrl(crawlObj.internalUrlId, function() {
+                        return;
+                      });
+                    }
+                  }
                   crawlObj.internalUrl = record.url;
                   crawlObj.internalUrlId = record._id;
 
