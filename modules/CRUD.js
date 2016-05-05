@@ -262,10 +262,19 @@ function init(callback) {
     });
 };
 
+/*API methods*/
+
 function getDomainsData(query, callback) {
   var q = query || {};
   //var expired = new ExpiredModel();
   ExpiredModel.find(q).exec(function(err, data) {
+    callback(err, data);
+  });
+}
+
+function getLastDomains(number, callback) {
+  var num = number || 50;
+  ExpiredModel.find().limit(num).sort({_id : -1}).exec(function(err, data) {
     callback(err, data);
   });
 }
@@ -283,5 +292,6 @@ module.exports = {
     getNextSourceDomain : getNextSourceDomain,
     lastCrawledDomain : lastCrawledDomain,
     lastCrawledInternalUrl : lastCrawledInternalUrl,
-    getDomainsData : getDomainsData
+    getDomainsData : getDomainsData,
+    getLastDomains : getLastDomains
 };
