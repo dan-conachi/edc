@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var path = require('path');
 var db = require('./modules/CRUD');
+var seo = require('./modules/seoData');
 
 var port = process.env.PORT || 8080;
 
@@ -27,6 +28,13 @@ router.route('/domains')
 router.route('/domains/last/')
   .get(function(req, res) {
     db.getLastDomains(100, function(err, data) {
+      res.send(data);
+    });
+  });
+router.route('/domains/checkAvailability/:domain')
+  .get(function(req, res) {
+    seo.checkDomainRegistration(req.params.domain, function(err, data) {
+      //send object {isAvailable : false/true}
       res.send(data);
     });
   });

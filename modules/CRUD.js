@@ -87,6 +87,7 @@ var lastCrawledUrl = function(model, callback) {
         if(data.length === 0) {
           //no data returned
           callback(null, null);
+          return;
         }
         callback(err, data[0]);
       }
@@ -208,6 +209,7 @@ function init(callback) {
     conn.once('open', function() {
       lastCrawledDomain(function(err, data) {
         if(err) throw new Error(err.message);
+        console.log(err);
         //no crawled domains in collection
         if(!data) {
           SourceModel.findOne({}, function(err, data) {
@@ -223,8 +225,7 @@ function init(callback) {
             crawlObj.currentDomainId = data._id;
           });
         }
-        lastCrawledInternalUrl(function(err, data) {
-          if(err) throw new Error(err.message);
+        lastCrawledInternalUrl(function(err, data) { 
           //if internals collection is empty
           if(!data) {
             InternalUrlModel.findOne({}, function(err, data) {
@@ -262,7 +263,7 @@ function init(callback) {
     });
 };
 
-/*API methods*/
+/*API methods */
 
 function getDomainsData(query, callback) {
   var q = query || {};

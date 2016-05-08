@@ -2,13 +2,11 @@
 body {
   background-color: #1b242c;
 }
-
 header > div.row {
   min-height: 100px;
   background-color: #2C3E4D;
   margin-right: -20px;
 }
-
 header > div.row a.logo {
   display: block;
   height: 100px;
@@ -16,26 +14,22 @@ header > div.row a.logo {
   background: transparent url('/img/logo_64.png') no-repeat center;
 }
 
-
 /*logo animation*/
 @keyframes logo {
   0% {transform: rotate(0deg);}
   100% {transform: rotate(360deg);}
 }
-
 a.logo {
   animation: logo 5s infinite ease-in-out;
 }
-/*end logo animation*/
 
+/*end logo animation*/
 h1 {
   color: #ffffff;
 }
-
 master-component .navbar ul.nav > li {
   margin: -1px 0;
 }
-
 master-component .navbar ul.nav > li > a {
   font-size: 24px;
   padding: 20px 30px;
@@ -43,7 +37,6 @@ master-component .navbar ul.nav > li > a {
   text-shadow: none;
   transition: background 1s;
 }
-
 master-component .navbar ul.nav > li > a.active, master-component .navbar ul.nav > li > a:hover {
   font-size: 24px;
   padding: 20px 30px;
@@ -56,41 +49,66 @@ master-component .navbar ul.nav > li > a.active, master-component .navbar ul.nav
   background: linear-gradient(to bottom,  #2c3e4d 0%,#1b242c 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c3e4d', endColorstr='#1b242c',GradientType=0 ); /* IE6-9 */
 }
-
 master-component .navbar ul.nav > li a:hover {
   background-color: #2C3E4D;
   color: #ffffff;
 }
-
 master-component .navbar ul.nav > li a.active {
   background-color: #2C3E4D;
 }
-
 .view-container {
   max-width: 1170px;
   margin: 0 auto;
 }
-
 list-domains div.row {
   color: rgb(201, 204, 205);
   padding: 5px 0;
 }
-
 list-domains div.row.item {
   background-color: #515c65;
   margin-bottom: 2px;
   color: rgb(201, 204, 205);
   padding: 5px 0;
 }
-
 list-domains div.row.item:hover {
   background-color: #353C42;
 }
-
 list-domains div.row.item:nth-child(odd) {
   background-color: #47525B;
 }
-
 list-domains div.row.item:nth-child(odd):hover {
   background-color: #353E48;
+}
+list-domains div.row span.del-btn {
+  display: block;
+  float: right;
+  background: url(/img/icon-delete.png) left top no-repeat;
+  width: 24px;
+  height: 24px;
+  box-shadow: none;
+}
+list-domains div.row span.del-btn:hover {
+  background-position: top right;
+  cursor: pointer;
+}
+list-domains div.row .verify-btn {
+  height: 26px;
+}
+list-domains div.row span.verify-btn {
+  float: left;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #000000;
+  border-radius: 50%;
+  background-color: #333333;
+  transition: background-color 500ms;
+}
+list-domains div.row span.verify-btn:hover {
+  cursor: pointer;
+}
+list-domains div.row span.verify-btn.available {
+  background-color: #039610;
+}
+list-domains div.row span.verify-btn.taken {
+  background-color: #961203;
 }

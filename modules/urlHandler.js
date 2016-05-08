@@ -54,8 +54,12 @@ function isValidDomain(domain) {
   //reg exp to match valid domain name
   var reg = /^(http(s)?:\/\/)?(www\.)?[a-zA-Z1-9\-]{3,}(\.[a-zA-Z]{2,10})?(\.[a-zA-Z]{2,3})?$/i;
   var matchDomain = domain.match(reg);
-  if(!matchDomain) return false
-  return true;
+  if(!matchDomain) {
+    return false;
+  }
+  else {
+    return true;
+  }
 }
 
 var isResourceFile = function(url) {
@@ -88,14 +92,14 @@ function getSlug(url) {
 
 function isJavaScript(url) {
   if(url.indexOf('javascript:') !== -1) {
-    return true
+    return true;
   }
   return false;
 }
 
 function isEmail(url) {
   if(url.indexOf('mailto:') !== -1) {
-    return true
+    return true;
   }
   return false;
 }
@@ -194,7 +198,7 @@ var manageUrl = function(checkedUrl, crawledUrl) {
               var record = {};
               record.url = externalDomain;
               seo.getSemrushBacklinks(externalDomain, function(err, links) {
-                if(links < 3) {
+                if(links < 5) {
                   return;
                 }
                 record.backlinks = links;

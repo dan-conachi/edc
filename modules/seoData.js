@@ -11,6 +11,7 @@ function getDomainAge(domain, callback) {
   req({url : ageUrl, method : 'GET'}, function(err, response, body) {
     if(!body){
       callback(err, null);
+      return;
     }
     var html = $.load(body);
     var dates = [];
@@ -78,8 +79,38 @@ function getSemrushBacklinks(domain, callback) {
   });
 }
 
+function checkDomainRegistration(domain, cb) {
+  var service = 'http://www.checkdomain.com/cgi-bin/checkdomain.pl?domain=' + domain;
+  var requestObj = {
+    url : service,
+    method : 'GET'
+  }
+
+  req(requestObj, function(err, response, body) {
+    if(err) console.log("Error: " + err);
+    if(body) {
+      var html = $.load(body);
+      var textBody = html('table').text();
+      var regexp = /is\sstill\savailable/ig;
+      var result = textBody.match(regexp);
+      if(Array.isArray(result)) {
+        cb(err, {isAvailable : true});
+      }
+      else {
+        cb(err, {isAvailable : false});
+      }
+    }
+    else {
+      console.log(err);
+      cb(err, {isAvailable : false});
+    }
+  });
+
+}
+
 module.exports = {
   getDomainAge : getDomainAge,
   getIndexedPagesInG : getIndexedPagesInG,
-  getSemrushBacklinks : getSemrushBacklinks
+  getSemrushBacklinks : getSemrushBacklinks,
+  checkDomainRegistration : checkDomainRegistration
 };
