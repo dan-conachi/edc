@@ -27,6 +27,13 @@ a.logo {
 h1 {
   color: #ffffff;
 }
+master-component .navbar.navbar-default {
+  border-radius: 0;
+  border-width: 1px 0;
+}
+master-component .navbar .container-fluid {
+  background-color: #232323;
+}
 master-component .navbar ul.nav > li {
   margin: -1px 0;
 }
@@ -39,6 +46,7 @@ master-component .navbar ul.nav > li > a {
 }
 master-component .navbar ul.nav > li > a.active, master-component .navbar ul.nav > li > a:hover {
   font-size: 24px;
+  color: #777777;
   padding: 20px 30px;
   transform: skew(-25deg);
   text-shadow: none
