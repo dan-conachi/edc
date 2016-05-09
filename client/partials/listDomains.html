@@ -1,0 +1,29 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-6 col-md-6"><span>Domain name</span></div>
+    <div class="col-lg-6 col-md-6"><span>Backlinks</span></div>
+  </div>
+  <div class="row item" ng-repeat="domain in list.domains">
+    <div class="col-lg-6 col-md-6">
+      <span>{{domain.url}}</span>
+    </div>
+    <div class="col-lg-5 col-md-5">
+      <span>{{domain.backlinks}}</span>
+    </div>
+    <div class="col-lg-1 col-md-1">
+      <span class="verify-btn"
+            ng-class="{available : (
+                              (domain.domainAvailable && (domain.domainAvailable !== undefined))
+                              ? true
+                              : false
+                              )
+                              , taken : (
+                              ((!domain.domainAvailable) && (domain.domainAvailable !== undefined))
+                              ? true
+                              : false
+                              )}"
+            ng-click="list.getDomainAvailability(this)" title="Verify Availability"></span>
+      <span class="del-btn" title="Delete domain"></span>
+    </div>
+  </div>
+</div>
