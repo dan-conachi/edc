@@ -213,8 +213,9 @@ var manageUrl = function(checkedUrl, crawledUrl) {
                   var now = new Date().getFullYear();
                   if((now - registerDate) >= 1) {
                     seo.getIndexedPagesInG(externalDomain, function(err, index) {
+                      var fullDomain = 'http://www.' + externalDomain;
                       if(index && index > 5000) {
-                        dbInterface.insertSource(externalDomain, function(err, data) { });
+                        dbInterface.insertSource(fullDomain, function(err, data) { });
                       }
                     });
                   }
