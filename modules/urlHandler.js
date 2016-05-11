@@ -74,7 +74,7 @@ var isResourceFile = function(url) {
     if(matchWebFile) {
         return false;
     }
-    var matchSourceFile = string.match(/\.([A-Za-z]{2,4})$/i); //match files with extensions between 2 and 4 symbols
+    var matchSourceFile = string.match(/\.([A-Za-z0-9]{2,4})$/i); //match files with extensions between 2 and 4 symbols
     if(matchSourceFile) {
         return true; //is a resource file
     }
