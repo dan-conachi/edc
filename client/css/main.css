@@ -68,26 +68,26 @@ master-component .navbar ul.nav > li a.active {
   max-width: 1170px;
   margin: 0 auto;
 }
-list-domains div.row {
+.list-domains div.row {
   color: rgb(201, 204, 205);
   padding: 5px 0;
 }
-list-domains div.row.item {
+.list-domains div.row.item {
   background-color: #515c65;
   margin-bottom: 2px;
   color: rgb(201, 204, 205);
   padding: 5px 0;
 }
-list-domains div.row.item:hover {
+.list-domains div.row.item:hover {
   background-color: #353C42;
 }
-list-domains div.row.item:nth-child(odd) {
+.list-domains div.row.item:nth-child(odd) {
   background-color: #47525B;
 }
-list-domains div.row.item:nth-child(odd):hover {
+.list-domains div.row.item:nth-child(odd):hover {
   background-color: #353E48;
 }
-list-domains div.row span.del-btn {
+.list-domains div.row span.del-btn {
   display: block;
   float: right;
   background: url(/img/icon-delete.png) left top no-repeat;
@@ -95,14 +95,14 @@ list-domains div.row span.del-btn {
   height: 24px;
   box-shadow: none;
 }
-list-domains div.row span.del-btn:hover {
+.list-domains div.row span.del-btn:hover {
   background-position: top right;
   cursor: pointer;
 }
-list-domains div.row .verify-btn {
+.list-domains div.row .verify-btn {
   height: 26px;
 }
-list-domains div.row span.verify-btn {
+.list-domains div.row span.verify-btn {
   float: left;
   width: 24px;
   height: 24px;
@@ -111,12 +111,19 @@ list-domains div.row span.verify-btn {
   background-color: #333333;
   transition: background-color 500ms;
 }
-list-domains div.row span.verify-btn:hover {
+.list-domains div.row span.verify-btn:hover {
   cursor: pointer;
 }
-list-domains div.row span.verify-btn.available {
+.list-domains div.row span.verify-btn.available {
   background-color: #039610;
 }
-list-domains div.row span.verify-btn.taken {
+.list-domains div.row span.verify-btn.taken {
   background-color: #961203;
+}
+.input-group input {
+  background-color: #332D2D;
+  color: #E6E5E5;
+}
+.input-group-addon {
+  background-color: #D2D1D1;
 }

@@ -1,0 +1,44 @@
+<div class="container-fluid">
+  <div class="row">
+    <form novalidate>
+      <div class="input-group">
+        <span class="input-group-addon" id="search-term">Search term</span>
+        <input type="text" ng-model="search.term" class="form-control" placeholder="Search term" aria-describedby="search-term">
+        <span class="input-group-addon" id="search-backlinks">Minumum Backlinks</span>
+        <input type="text" ng-model="search.backlinks" class="form-control" placeholder="Backlinks number" aria-describedby="search-backlinks">
+        <span class="input-group-addon" id="search-results">Search results</span>
+        <input type="text" ng-model="search.results" class="form-control" placeholder="Results number" aria-describedby="search-results">
+        <span class="input-group-btn" id="button">
+          <button type="button" ng-click="search.search(search.term, search.backlinks, search.results)" class="form-control" name="button">Go!</button>
+        </span>
+      </div>
+    </form>
+  </div>
+  <div class="row">
+    <div class="col-lg-6 col-md-6"><span>Domain name</span></div>
+    <div class="col-lg-6 col-md-6"><span>Backlinks</span></div>
+  </div>
+  <div class="row item" ng-repeat="domain in search.domains">
+    <div class="col-lg-6 col-md-6">
+      <span>{{domain.url}}</span>
+    </div>
+    <div class="col-lg-5 col-md-5">
+      <span>{{domain.backlinks}}</span>
+    </div>
+    <div class="col-lg-1 col-md-1">
+      <span class="verify-btn"
+            ng-class="{available : (
+                              (domain.domainAvailable && (domain.domainAvailable !== undefined))
+                              ? true
+                              : false
+                              )
+                              , taken : (
+                              ((!domain.domainAvailable) && (domain.domainAvailable !== undefined))
+                              ? true
+                              : false
+                              )}"
+            ng-click="search.getDomainAvailability(this)" title="Verify Availability"></span>
+      <span class="del-btn" title="Delete domain"></span>
+    </div>
+  </div>
+</div>

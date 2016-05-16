@@ -225,7 +225,7 @@ function init(callback) {
             crawlObj.currentDomainId = data._id;
           });
         }
-        lastCrawledInternalUrl(function(err, data) { 
+        lastCrawledInternalUrl(function(err, data) {
           //if internals collection is empty
           if(!data) {
             InternalUrlModel.findOne({}, function(err, data) {
@@ -280,6 +280,24 @@ function getLastDomains(number, callback) {
   });
 }
 
+function searchDomains(term, minBacklinks, limit, callback) {
+  var optionsArray = [];
+  var regexp = term === 'undefined' ? /./g : new RegExp(term, 'g');
+  optionsArray.push({url : regexp});
+  var backlinks = minBacklinks === 'undefined' ? 0 : minBacklinks;
+  optionsArray.push({backlinks : {$gt : backlinks}})
+  var num = limit === 'undefined' ? 500 : limit;
+  console.log('optionsArray url: ' + optionsArray[0].url);
+  console.log('optionsArray backlinks: ' + optionsArray[1].backlinks);
+
+  ExpiredModel.find({$and : optionsArray}).limit(num).exec(function(err, data) {
+    console.log(data);
+    callback(err, data);
+  });
+}
+
+/*End API*/
+
 module.exports = {
     init: init,
     crawlObj: crawlObj,
@@ -294,5 +312,6 @@ module.exports = {
     lastCrawledDomain : lastCrawledDomain,
     lastCrawledInternalUrl : lastCrawledInternalUrl,
     getDomainsData : getDomainsData,
-    getLastDomains : getLastDomains
+    getLastDomains : getLastDomains,
+    searchDomains : searchDomains
 };

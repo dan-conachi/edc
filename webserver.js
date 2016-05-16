@@ -45,5 +45,11 @@ router.route('/domains/last/:num')
       res.send(data);
     });
   });
+router.route('/domains/search/:term/:backlinks/:limit')
+  .get(function(req, res) {
+    db.searchDomains(req.params.term, req.params.backlinks, req.params.limit, function(err, data) {
+      res.send(data);
+    });
+  });
 
 app.listen(port);

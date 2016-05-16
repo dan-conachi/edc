@@ -2,26 +2,22 @@ import angular, {module, bootstrap} from 'angular';
 import ngRoute from 'angular-route';
 import './modules/master/';
 import './modules/list/';
+import './modules/search/';
 import domainsService from './dataService';
 
-angular.module('exDomains', ['master', 'domains', 'ngRoute'])
+angular.module('exDomains', ['Master', 'List', 'Search', 'ngRoute'])
   .factory('domainsService', domainsService)
   .config(configRoute);
-
-document.addEventListener('DOMContentLoaded', ()=> {
-  var appContainer = document.querySelector('#app-container');
-  angular.bootstrap(appContainer, ['exDomains']);
-});
 
 configRoute.$inject = ['$routeProvider'];
 function configRoute($routeProvider) {
   $routeProvider
     .when('/', {
-        template : '<list-domains></list-domains>',
+        template : '<list-domains class="list-domains"></list-domains>',
         tab : 'index'
     })
     .when('/search', {
-        template : '',
+        template : '<search-domains class="list-domains"></search-domains>',
         tab : 'search'
     })
     .when('/selected', {
@@ -30,3 +26,8 @@ function configRoute($routeProvider) {
     })
     .otherwise({redirectTo : '/'})
 }
+
+document.addEventListener('DOMContentLoaded', ()=> {
+  var appContainer = document.querySelector('#app-container');
+  angular.bootstrap(appContainer, ['exDomains']);
+});
