@@ -17,28 +17,19 @@ function domainsService($http) {
       return $http.get(req);
     }
 
+    function searchDomains(term, backlinks, limit) {
+      var search = term || undefined;
+      var bl = backlinks || undefined;
+      var lm = limit || undefined;
+      return $http.get('/api/v1/domains/search/' + search + '/' + bl + '/' + lm);
+    }
+
     return {
       getDomains : getDomains,
       getLastDomains : getLastDomains,
-      checkDomainRegistration : checkDomainRegistration
+      checkDomainRegistration : checkDomainRegistration,
+      searchDomains : searchDomains
     }
 }
 
 export default domainsService;
-
-/*API methods */
-
-function getDomainsData(query, callback) {
-  var q = query || {};
-  //var expired = new ExpiredModel();
-  ExpiredModel.find(q).exec(function(err, data) {
-    callback(err, data);
-  });
-}
-
-function getLastDomains(number, callback) {
-  var num = number || 50;
-  ExpiredModel.find().limit(num).sort({_id : -1}).exec(function(err, data) {
-    callback(err, data);
-  });
-}

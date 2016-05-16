@@ -3,5 +3,5 @@
 import {module} from 'angular';
 import list from './listDirective';
 
-angular.module('domains', [])
+angular.module('List', [])
     .directive('listDomains', list);
