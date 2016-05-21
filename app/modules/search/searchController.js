@@ -19,6 +19,13 @@ function searchController(domainsService) {
       });
     }
 
+    this.saveDomain = function(obj) {
+      service.saveSelectedDomain(obj).then((res) => {
+        if(res.statusText === 'OK') {
+          obj.isSaved = true;
+        }
+      });
+    }
 }
 
 export default searchController;

@@ -34,8 +34,6 @@ function listController(domainsService) {
         if(res.statusText === 'OK') {
           obj.isSaved = true;
         }
-        console.log('save object: ' + res);
-        console.log(JSON.stringify(res));
       });
     }
 }

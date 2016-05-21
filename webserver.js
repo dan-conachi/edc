@@ -56,9 +56,7 @@ router.route('/domains/search/:term/:backlinks/:limit')
   });
 router.route('/domains/selected/')
   .post(function(req, res) {
-    console.log(req.body);
     db.insertSelected(req.body, function(err, response) {
-      console.log(response);
       res.send(response);
     });
   })
@@ -70,7 +68,6 @@ router.route('/domains/selected/')
   });
 router.route('/domains/selected/:id')
 .delete(function(req, res) {
-  console.log('delete called');
   db.removeSavedDomain(req.params.id, function(err, response) {
     if(err) {
       res.send(err);

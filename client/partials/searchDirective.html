@@ -38,7 +38,7 @@
                               : false
                               )}"
             ng-click="search.getDomainAvailability(this)" title="Verify Availability"></span>
-      <span class="del-btn" title="Delete domain"></span>
+      <span class="save-selected" ng-click="search.saveDomain(domain)" ng-class="{saved: domain.isSaved}" title="Save domain"></span>
     </div>
   </div>
 </div>
