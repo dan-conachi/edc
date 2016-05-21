@@ -16,6 +16,10 @@ var InternalUrlModel = mongoose.model('internal', internalUrlSchema);
 var sourceSchema = new Schema({url : {type : String, index : true}, crawled : {type : Boolean, default : false}}, {collection : 'sources'});
 var SourceModel = mongoose.model('source', sourceSchema);
 
+//schema for internal urls
+var selectedSchema = new Schema({url : String, backlinks : Number}, {collection : 'selecteds'});
+var SelectedModel = mongoose.model('selected', selectedSchema);
+
 //mongoose.connect(config.mongoConnect);
 mongoose.connect(process.env.MONGOLAB_URI.toString());
 var conn = mongoose.connection;
@@ -296,6 +300,40 @@ function searchDomains(term, minBacklinks, limit, callback) {
   });
 }
 
+function insertSelected(record, callback) {
+  //record must be an object with expired schema properties
+    var selected = new SelectedModel(record);
+    selected.save(function(err, res) {
+        if(err) {
+            console.log(err.message);
+            callback(err, null);
+            return;
+        }
+        callback(null, res);
+    });
+};
+
+function getSelectedDomains(query, callback) {
+  var q = query || {};
+  SelectedModel.find(q).exec(function(err, data) {
+    callback(err, data);
+  });
+}
+
+function removeSavedDomain(id, callback) {
+  if((id !== undefined) && (id.length > 0)) {
+    SelectedModel.remove({_id : mongoose.Types.ObjectId(id)}, function(err, res) {
+      if(err) {
+        callback(err, null);
+      } else {
+        callback(null, res);
+      }
+    });
+  } else {
+    callback('no id provided', null);
+  }
+}
+
 /*End API*/
 
 module.exports = {
@@ -313,5 +351,8 @@ module.exports = {
     lastCrawledInternalUrl : lastCrawledInternalUrl,
     getDomainsData : getDomainsData,
     getLastDomains : getLastDomains,
-    searchDomains : searchDomains
+    searchDomains : searchDomains,
+    insertSelected : insertSelected,
+    getSelectedDomains : getSelectedDomains,
+    removeSavedDomain : removeSavedDomain
 };

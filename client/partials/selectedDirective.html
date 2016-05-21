@@ -3,7 +3,7 @@
     <div class="col-lg-6 col-md-6"><span>Domain name</span></div>
     <div class="col-lg-6 col-md-6"><span>Backlinks</span></div>
   </div>
-  <div class="row item" ng-repeat="domain in list.domains">
+  <div class="row item" ng-repeat="domain in selected.domains">
     <div class="col-lg-6 col-md-6">
       <span>{{domain.url}}</span>
     </div>
@@ -13,17 +13,17 @@
     <div class="col-lg-1 col-md-1">
       <span class="verify-btn"
             ng-class="{available : (
-                              (domain.domainAvailable && (domain.domainAvailable !== undefined))
+                              (selected.domainAvailable && (domain.domainAvailable !== undefined))
                               ? true
                               : false
                               )
                               , taken : (
-                              ((!domain.domainAvailable) && (domain.domainAvailable !== undefined))
+                              ((!selected.domainAvailable) && (domain.domainAvailable !== undefined))
                               ? true
                               : false
                               )}"
-            ng-click="list.getDomainAvailability(domain)" title="Verify Availability"></span>
-      <span class="save-selected" ng-click="list.saveDomain(domain)" ng-class="{saved: domain.isSaved}" title="Save domain"></span>
+            ng-click="selected.getDomainAvailability(domain)" title="Verify Availability"></span>
+      <span class="del-btn" ng-click="selected.removeSavedDomain(domain)" title="Delete domain"></span>
     </div>
   </div>
 </div>

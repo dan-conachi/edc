@@ -99,6 +99,22 @@ master-component .navbar ul.nav > li a.active {
   background-position: top right;
   cursor: pointer;
 }
+.list-domains .save-selected {
+  display: block;
+  float: right;
+  opacity: 0.5;
+  background: transparent url('/img/save-button-black.png') left top no-repeat;
+  width: 24px;
+  height: 24px;
+}
+.list-domains .save-selected:hover {
+  cursor: pointer;
+  opacity: 1;
+}
+.list-domains .save-selected.saved {
+  background: transparent url('/img/save-button-blue.png') left top no-repeat;
+  opacity: 1;
+}
 .list-domains div.row .verify-btn {
   height: 26px;
 }

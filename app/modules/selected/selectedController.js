@@ -1,12 +1,12 @@
 'use strict';
 
-listController.$inject = ['domainsService'];
-function listController(domainsService) {
+selectedController.$inject = ['domainsService'];
+function selectedController(domainsService) {
     this.domains = [];
     this.domainAvailable;
     var service = domainsService;
 
-    service.getLastDomains().then((res) => {
+    service.getSavedDomains().then((res) => {
       var domainList = res.data;
       //add domainAvailable property on each object
       var length = domainList.length;
@@ -16,11 +16,19 @@ function listController(domainsService) {
       this.domains = domainList;
     });
 
-    this.findDomains = function() {
-      service.getDomains().then((res) => {
-        this.domains = res.data;
+    this.removeSavedDomain = function(domain) {
+      service.removeSavedDomains(domain._id).then((res) => {
+        if(res.statusText === 'OK') {
+          let index;
+          for(index in this.domains) {
+            if(this.domains[index]._id === domain._id) {
+              //remove object from array
+              this.domains.splice(index, 1);
+            }
+          }
+        }
       });
-    }
+    };
 
     //sends request to check if domain is free or registered
     this.getDomainAvailability = function(domain) {
@@ -28,16 +36,6 @@ function listController(domainsService) {
         domain.domainAvailable = res.data.isAvailable;
       });
     }
-
-    this.saveDomain = function(obj) {
-      service.saveSelectedDomain(obj).then((res) => {
-        if(res.statusText === 'OK') {
-          obj.isSaved = true;
-        }
-        console.log('save object: ' + res);
-        console.log(JSON.stringify(res));
-      });
-    }
 }
 
-export default listController;
+export default selectedController;

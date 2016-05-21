@@ -24,11 +24,29 @@ function domainsService($http) {
       return $http.get('/api/v1/domains/search/' + search + '/' + bl + '/' + lm);
     }
 
+    function saveSelectedDomain(obj) {
+      let {url, backlinks} = obj;
+      let domainProps = {url : url, backlinks : backlinks};
+      
+      return $http.post('/api/v1/domains/selected/', domainProps);
+    }
+
+    function getSavedDomains() {
+      return $http.get('/api/v1/domains/selected/');
+    }
+
+    function removeSavedDomains(id) {
+      return $http.delete('/api/v1/domains/selected/' + id);
+    }
+
     return {
       getDomains : getDomains,
       getLastDomains : getLastDomains,
       checkDomainRegistration : checkDomainRegistration,
-      searchDomains : searchDomains
+      searchDomains : searchDomains,
+      saveSelectedDomain : saveSelectedDomain,
+      getSavedDomains : getSavedDomains,
+      removeSavedDomains : removeSavedDomains
     }
 }
 

@@ -3,9 +3,10 @@ import ngRoute from 'angular-route';
 import './modules/master/';
 import './modules/list/';
 import './modules/search/';
+import './modules/selected/';
 import domainsService from './dataService';
 
-angular.module('exDomains', ['Master', 'List', 'Search', 'ngRoute'])
+angular.module('exDomains', ['Master', 'List', 'Search', 'Selected', 'ngRoute'])
   .factory('domainsService', domainsService)
   .config(configRoute);
 
@@ -21,7 +22,7 @@ function configRoute($routeProvider) {
         tab : 'search'
     })
     .when('/selected', {
-        template : '',
+        template : '<selected-domains class="list-domains"></selected-domains>',
         tab : 'selected'
     })
     .otherwise({redirectTo : '/'})
