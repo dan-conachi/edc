@@ -56,7 +56,7 @@ function crawl(reqestObj) {
                 if(!record) { //if result null then end crawl
                     console.log('couldnt get next record for this id ' + crawlObj.internalUrlId);
                     config.crawlerActive = false;
-                    dbInterface.rebuildInternalCollection(rebuildInternalCollectionCb());
+                    dbInterface.rebuildInternalCollection(rebuildInternalCollectionCb;
                     return;
                 }
                 else {
